@@ -49,6 +49,13 @@ docker run --rm --volume "$PWD/data:/data" legal-embedding-worker:latest \
   --overlap-words 40
 ```
 
-Scanned PDFs must be OCRed first. In the eventual AWS pipeline, a Kafka consumer
-adapter can invoke this worker logic for an S3 object and send the generated
-records to a dedicated vector-index writer.
+Scanned PDFs must be OCRed first.
+
+## Kafka worker and query API modes
+
+`/app/queue_worker.py` consumes `judgment.uploaded` using the independent
+`questacase-embedding-workers` consumer group, downloads PDFs from S3, creates
+vectors with the bundled model, imports them into Qdrant, and publishes status
+events. The same image can simultaneously run `/app/embedding_server.py` in a
+second container to serve query vectors on `/embed` without separate model
+installation or persistent storage.
