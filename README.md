@@ -59,3 +59,18 @@ vectors with the bundled model, imports them into Qdrant, and publishes status
 events. The same image can simultaneously run `/app/embedding_server.py` in a
 second container to serve query vectors on `/embed` without separate model
 installation or persistent storage.
+
+The queue worker validates the current Web API event contract, verifies the S3
+download size, preserves the upload API's `documentId`, and commits an offset
+only after publishing a completion or failure event. Plaintext Kafka remains
+the default used by the current infrastructure. Optional secured-broker settings
+are `KAFKA_SSL`, `KAFKA_SSL_CA_FILE`, `KAFKA_SASL_MECHANISM`,
+`KAFKA_SASL_USERNAME`, and `KAFKA_SASL_PASSWORD`; retry and processing windows
+can be adjusted with `WORKER_RETRY_SECONDS` and `KAFKA_MAX_POLL_INTERVAL_MS`.
+
+## Tests
+
+```bash
+python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python -m pytest
+```
